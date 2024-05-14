@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Generation</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <style>
+        #image-container {
+            margin-top: 20px;
+            text-align: center;
+            border: 5px solid #00ff00; 
+            background-color: rgba(0, 255, 0, 0.1);
+            padding: 10px;
+            display: block;
+            width: fit-content; 
+            box-sizing: border-box;
+          }
+    </style>
+
+    <div id="root">
+        <button id="generate-btn">Generate Image</button>
+        <div id="image-container">
+            <img id="generated-image" src="" alt="Generated Image" style="display: none;" />
+        </div>
+    </div>
+    <script>
+        document.getElementById('generate-btn')?.addEventListener('click', async () => {
+            console.log("clicked")
+            try {
+                const response = await fetch('/request');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                const imageUrl = data.result; // Adjust this if the structure of your response is different
+        
+                const imgElement = document.getElementById('generated-image');
+                imgElement.src = imageUrl;
+                imgElement.style.display = 'block';
+            } catch (error) {
+                console.error('Error generating image:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>
