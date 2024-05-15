@@ -26,7 +26,7 @@ var import_replicate = __toESM(require("replicate"));
 var import_cors = __toESM(require("cors"));
 var import_path = __toESM(require("path"));
 const replicate = new import_replicate.default({
-  auth: "r8_BLd8EZFSCUC07txQFX72eP6duTJI3FG3ewc2W"
+  auth: "r8_UyH7brBt35yeoQNXjiOt7D2D8QDQXPY0j9bHu"
 });
 const model = "stability-ai/stable-diffusion:db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf";
 const input = {

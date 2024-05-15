@@ -13,21 +13,58 @@
         #image-container {
             margin-top: 20px;
             text-align: center;
-            border: 5px solid #00ff00; 
+            border: 5px solid #00ff00;
             background-color: rgba(0, 255, 0, 0.1);
             padding: 10px;
             display: block;
-            width: fit-content; 
+            width: fit-content;
             box-sizing: border-box;
-          }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            text-align: center;
+        }
+
+        input[type="text"],
+        input[type="file"] {
+            width: 300px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        #displayArea {
+            margin-top: 20px;
+        }
     </style>
 
     <div id="root">
-        <button id="generate-btn">Generate Image</button>
-        <div id="image-container">
-            <img id="generated-image" src="" alt="Generated Image" style="display: none;" />
+
+        <h1>RoomGPT 图像生成器</h1>
+        <input type="file" id="csvFile" accept=".csv">
+        <button onclick="loadCSV()">加载CSV</button>
+        <br>
+        <label for="prompt">输入提示:</label>
+        <input type="text" id="prompt" placeholder="请输入提示">
+        <button onclick="generateImage()">生成图像</button>
+        <div id="displayArea">
+            <p id="dataDisplay"></p>
+            
+            <button id="generate-btn">Generate Image</button>
+            <div id="image-container">
+                <img id="generated-image" src="" alt="Generated Image" style="display: none;" />
+            </div>
         </div>
     </div>
+
     <script>
         document.getElementById('generate-btn')?.addEventListener('click', async () => {
             console.log("clicked")
@@ -38,7 +75,7 @@
                 }
                 const data = await response.json();
                 const imageUrl = data.result; // Adjust this if the structure of your response is different
-        
+
                 const imgElement = document.getElementById('generated-image');
                 imgElement.src = imageUrl;
                 imgElement.style.display = 'block';

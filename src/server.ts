@@ -5,7 +5,7 @@ import path from 'path';
 import fs from 'fs'
 
 const replicate = new Replicate({
-    auth: "r8_BLd8EZFSCUC07txQFX72eP6duTJI3FG3ewc2W",
+    auth: "",
 });
 
 const model =
