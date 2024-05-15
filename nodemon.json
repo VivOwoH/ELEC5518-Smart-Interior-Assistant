@@ -7,6 +7,6 @@
         "node_modules"
     ],
     "ext": "tsx,ts,mjs,js,json,graphql",
-    "exec": "etsc && node ./build/src/server.js",
+    "exec": "etsc && node ./build/server.js",
     "legacyWatch": true
 }

@@ -2,10 +2,9 @@ import express, { Request, Response } from "express";
 import Replicate from "replicate";
 import cors from 'cors';
 import path from 'path';
-import fs from 'fs'
 
 const replicate = new Replicate({
-    auth: "",
+    auth: "r8_7czSP5xjOVjetjN7Nsu97yVzIQmECOW22aM4W",
 });
 
 const model =
