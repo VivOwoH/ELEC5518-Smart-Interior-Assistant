@@ -50,11 +50,12 @@
 
         <h1>RoomGPT 图像生成器</h1>
         <input type="file" id="csvFile" accept=".csv">
-        <button onclick="loadCSV()">加载CSV</button>
+
+        <button id="req-thingspeak">See room data</button>
+        
         <br>
         <label for="prompt">输入提示:</label>
         <input type="text" id="prompt" placeholder="请输入提示">
-        <button onclick="generateImage()">生成图像</button>
         <div id="displayArea">
             <p id="dataDisplay"></p>
             
@@ -81,6 +82,21 @@
                 imgElement.style.display = 'block';
             } catch (error) {
                 console.error('Error generating image:', error);
+            }
+        });
+    </script>
+    <script>
+        document.getElementById('req-thingspeak')?.addEventListener('click', async () => {
+            console.log("Requesting data from thingspeak")
+            try {
+                const response = await fetch('/fetch');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const res = await response.json();
+                console.log(res.data) // <--------------------- add front end for this
+            } catch (error) {
+                console.error('Error fetching data:', error);
             }
         });
     </script>

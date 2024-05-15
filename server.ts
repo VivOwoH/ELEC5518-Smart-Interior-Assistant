@@ -1,4 +1,6 @@
 import express, { Request, Response } from "express";
+import axios from "axios";
+import { createObjectCsvWriter } from "csv-writer";
 import Replicate from "replicate";
 import cors from 'cors';
 import path from 'path';
@@ -13,6 +15,15 @@ const input = {
     prompt:
         "I need a small room with 21 degrees of light, 34 ultrasonic, 45 temperture and 56 humidity",
 };
+
+// thingspeak
+const thingspeakAPI = axios.create({
+    baseURL: "https://api.thingspeak.com",
+});
+
+const channelID = '2549941';
+const readApiKey = '2DWC40ZT6TVFVB67';
+
 
 const app = express();
 app.use(express.json());
@@ -37,6 +48,46 @@ app.get("/request", async (req: Request, res: Response): Promise<void> => {
     }
 });
 
+
+const fetchDataFromThingSpeak = async (): Promise<any> => {
+    try {
+        const response = await thingspeakAPI.get(`/channels/${channelID}/feeds.json?api_key=${readApiKey}`);
+        return response.data.feeds;
+    } catch (error) {
+        throw new Error("Failed to fetch data from ThingSpeak");
+    }
+};
+
+const saveDataToCSV = (data: any[], filePath: string): void => {
+    const csvWriter = createObjectCsvWriter({
+        path: filePath,
+        header: [
+            { id: "created_at", title: "Timestamp" },
+            { id: "field1", title: "Distance" },
+            { id: "field2", title: "Humidity" }, 
+            { id: "field3", title: "Temperature" }, 
+            { id: "field4", title: "Light" }, 
+        ],
+    });
+    csvWriter.writeRecords(data)
+        .then(() => console.log("Saved to CSV"))
+        .catch((error: any) => console.error("Failed to save to CSV:", error));
+};
+
+
+app.get("/fetch", async (req: Request, res: Response): Promise<void> => {
+    try {
+        const data = await fetchDataFromThingSpeak();
+        const filePath = path.join(__dirname, "data.csv");
+        saveDataToCSV(data, filePath);
+        res.json({ message: "Data fetched and saved to CSV", data});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch and save data" });
+    }
+});
+
+
 app.get('/', (_, res) => {
     res.sendFile(path.resolve('./public/index.html'));
   });
@@ -50,7 +101,6 @@ const start = async (): Promise<void> => {
         console.error(error);
         process.exit(1);
     }
-
 };
 
 void start();
