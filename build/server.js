@@ -28,7 +28,7 @@ var import_replicate = __toESM(require("replicate"));
 var import_cors = __toESM(require("cors"));
 var import_path = __toESM(require("path"));
 const replicate = new import_replicate.default({
-  auth: "r8_7czSP5xjOVjetjN7Nsu97yVzIQmECOW22aM4W"
+  auth: "r8_DbLLQW3PyidLx9phoExbqwC5xwzTUSZ3gsyfv"
 });
 const model = "stability-ai/stable-diffusion:db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf";
 const input = {
@@ -39,6 +39,14 @@ const thingspeakAPI = import_axios.default.create({
 });
 const channelID = "2549941";
 const readApiKey = "2DWC40ZT6TVFVB67";
+const username = "vivianH";
+const feedKey = "image-stream";
+const adafruitIOAPI = import_axios.default.create({
+  baseURL: "https://io.adafruit.com/api/v2",
+  headers: {
+    "X-AIO-Key": "aio_cAcE97DnmfhfSE1wtk60dbttr069"
+  }
+});
 const app = (0, import_express.default)();
 app.use(import_express.default.json());
 app.use("/public", import_express.default.static("public"));
@@ -89,16 +97,17 @@ app.get("/fetch", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch and save data" });
   }
 });
+app.get("/fetch-image-feed", async (req, res) => {
+  try {
+    const response = await adafruitIOAPI.get(`/${username}/feeds/${feedKey}/data`);
+    res.json({ message: "Fetched image feed data", data: response.data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch image feed data" });
+  }
+});
 app.get("/", (_, res) => {
   res.sendFile(import_path.default.resolve("./public/index.html"));
-});
-document.getElementById('see-room-data').addEventListener('click', function() {
-  var infoBox = document.getElementById('info-box');
-  if (infoBox.style.display === 'none') {
-      infoBox.style.display = 'block';
-  } else {
-      infoBox.style.display = 'none'; // Optional: Toggle visibility on click
-  }
 });
 const start = async () => {
   try {

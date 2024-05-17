@@ -6,7 +6,7 @@ import cors from 'cors';
 import path from 'path';
 
 const replicate = new Replicate({
-    auth: "r8_7czSP5xjOVjetjN7Nsu97yVzIQmECOW22aM4W",
+    auth: "r8_DbLLQW3PyidLx9phoExbqwC5xwzTUSZ3gsyfv",
 });
 
 const model =
@@ -24,6 +24,15 @@ const thingspeakAPI = axios.create({
 const channelID = '2549941';
 const readApiKey = '2DWC40ZT6TVFVB67';
 
+// Adafruit IO
+const username = "vivianH";
+const feedKey = 'image-stream';
+const adafruitIOAPI = axios.create({
+    baseURL: "https://io.adafruit.com/api/v2",
+    headers: {
+        'X-AIO-Key': "aio_cAcE97DnmfhfSE1wtk60dbttr069",
+    }
+});
 
 const app = express();
 app.use(express.json());
@@ -84,6 +93,16 @@ app.get("/fetch", async (req: Request, res: Response): Promise<void> => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Failed to fetch and save data" });
+    }
+});
+
+app.get("/fetch-image-feed", async (req: Request, res: Response): Promise<void> => {
+    try {
+        const response = await adafruitIOAPI.get(`/${username}/feeds/${feedKey}/data`);
+        res.json({ message: "Fetched image feed data", data: response.data });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch image feed data" });
     }
 });
 
