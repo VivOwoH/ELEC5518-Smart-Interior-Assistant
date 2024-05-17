@@ -6,7 +6,7 @@ import cors from 'cors';
 import path from 'path';
 
 const replicate = new Replicate({
-    auth: "r8_DbLLQW3PyidLx9phoExbqwC5xwzTUSZ3gsyfv",
+    auth: "", // <--------------- ENTER YOUR OWN
 });
 
 const model =
@@ -22,7 +22,7 @@ const thingspeakAPI = axios.create({
 });
 
 const channelID = '2549941';
-const readApiKey = '2DWC40ZT6TVFVB67';
+const readApiKey = ''; // <--------------- ENTER YOUR OWN
 
 // Adafruit IO
 const username = "vivianH";
@@ -30,7 +30,7 @@ const feedKey = 'image-stream';
 const adafruitIOAPI = axios.create({
     baseURL: "https://io.adafruit.com/api/v2",
     headers: {
-        'X-AIO-Key': "aio_cAcE97DnmfhfSE1wtk60dbttr069",
+        'X-AIO-Key': "", // <--------------- ENTER YOUR OWN
     }
 });
 
