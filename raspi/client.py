@@ -1,13 +1,14 @@
-import sys, json, time, os, glob
+import sys, json, time, os, glob, threading
 import requests
 from gpiozero import DistanceSensor, LightSensor
+import photo
 
-# os.system('modprobe w1-gpio')
-# os.system('modprobe w1-therm')
+os.system('modprobe w1-gpio')
+os.system('modprobe w1-therm')
 
-# base_dir = '/sys/bus/w1/devices/'
-# device_folder = glob.glob(base_dir + '28*')[0]
-# device_file = device_folder + '/w1_slave'
+base_dir = '/sys/bus/w1/devices/'
+device_folder = glob.glob(base_dir + '28*')[0]
+device_file = device_folder + '/w1_slave'
 
 # raspi settings
 dist_sensor = DistanceSensor(echo=12, trigger=16, max_distance=4)
@@ -28,8 +29,9 @@ def read_room_data():
     '''reader'''
     distance = dist_sensor.distance * 100 # cm
     light = ldr.value
-    # temp, _ = read_temp() # only celcius
-    room_data.update({"distance": distance, "light": light})
+    temp, _ = read_temp() # only celcius
+    time.sleep(1)
+    room_data.update({"distance": distance, "light": light, "temperature": temp})
 
 def thingspeak(distance, humidity, temperature, light):
     '''post request'''
@@ -45,28 +47,27 @@ def thingspeak(distance, humidity, temperature, light):
     else:
         print("Error Code: " + str(r.status_code))
 
-# def read_temp_raw():
-#     f = open(device_file, 'r')
-#     lines = f.readlines()
-#     f.close()
-#     return lines
+def read_temp_raw():
+    f = open(device_file, 'r')
+    lines = f.readlines()
+    f.close()
+    return lines
  
-# def read_temp():
-#     '''temperature'''
-#     lines = read_temp_raw()
-#     while lines[0].strip()[-3:] != 'YES':
-#         time.sleep(0.2)
-#         lines = read_temp_raw()
-#     equals_pos = lines[1].find('t=')
-#     if equals_pos != -1:
-#         temp_string = lines[1][equals_pos+2:]
-#         temp_c = float(temp_string) / 1000.0
-#         temp_f = temp_c * 9.0 / 5.0 + 32.0
-#         return temp_c, temp_f
-
+def read_temp():
+    '''temperature'''
+    lines = read_temp_raw()
+    while lines[0].strip()[-3:] != 'YES':
+        time.sleep(0.2)
+        lines = read_temp_raw()
+    equals_pos = lines[1].find('t=')
+    if equals_pos != -1:
+        temp_string = lines[1][equals_pos+2:]
+        temp_c = float(temp_string) / 1000.0
+        temp_f = temp_c * 9.0 / 5.0 + 32.0
+        return temp_c, temp_f
 
 # ------------------- Program entry ---------------------
-if __name__=="__main__":
+def main_loop():
     try:
         while True:
             read_room_data()
@@ -74,7 +75,19 @@ if __name__=="__main__":
                        room_data.get("humidity"),
                        room_data.get("temperature"), 
                        room_data.get("light"))
+            print(room_data)
             print("data is sent to thingspeak")
-            time.sleep(30)
+            time.sleep(10) # send data every 10secs
     except:
         pass
+
+if __name__ == "__main__":
+    try:
+        # Start the photo process
+        photo_thread = threading.Thread(target=photo.start)
+        photo_thread.start()
+
+        main_loop()
+
+    except KeyboardInterrupt:
+        print("Process interrupted")
