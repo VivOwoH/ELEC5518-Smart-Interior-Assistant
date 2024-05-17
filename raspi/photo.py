@@ -4,7 +4,7 @@ from Adafruit_IO import MQTTClient
 from PIL import Image
 
 IO_USERNAME = 'vivianH'
-IO_KEY = "aio_cAcE97DnmfhfSE1wtk60dbttr069"
+IO_KEY = "" # <--------- ENTER YOUR OWN
 IO_URL = 'io.adafruit.com'
 
 camera = PiCamera()
