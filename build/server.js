@@ -92,6 +92,14 @@ app.get("/fetch", async (req, res) => {
 app.get("/", (_, res) => {
   res.sendFile(import_path.default.resolve("./public/index.html"));
 });
+document.getElementById('see-room-data').addEventListener('click', function() {
+  var infoBox = document.getElementById('info-box');
+  if (infoBox.style.display === 'none') {
+      infoBox.style.display = 'block';
+  } else {
+      infoBox.style.display = 'none'; // Optional: Toggle visibility on click
+  }
+});
 const start = async () => {
   try {
     app.listen(3e3, () => {
