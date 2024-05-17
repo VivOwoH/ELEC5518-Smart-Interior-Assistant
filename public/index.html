@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<!-- saved from url=(0039)http://127.0.0.1:5500/public/index.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Generation</title>
+    <link rel="stylesheet" href="./Image Generation_files/style.css">
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1173.0" data-gr-ext-installed="">
+    <style>
+        #image-container {
+            margin-top: 20px;
+            text-align: center;
+            border: 5px solid #00ff00;
+            background-color: rgba(0, 255, 0, 0.1);
+            padding: 10px;
+            display: block;
+            width: fit-content;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            text-align: center;
+        }
+
+        input[type="text"],
+        input[type="file"] {
+            width: 300px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        #displayArea {
+            margin-top: 20px;
+        }
+
+        .info-box {
+        position: absolute;
+        top: 20px;
+        right: 140px;
+        background: #4CAF50;
+        color: #FFFFFF;
+        border-radius: 10px;
+        padding: 15px;
+        width: 200px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        z-index: 10;
+        }
+
+        .info-box p {
+        margin: 5px 0;
+        }
+
+        .info-box strong {
+        color: #FFFFFF; /* White color for headings too */
+        }
+
+        .info-box span {
+        float: right;
+        }
+
+    </style>
+
+    <div id="root">
+
+        <h1>Smart Interior Assistant</h1>
+        
+
+        <button id="req-thingspeak">See room data</button>
+        
+        <br>
+        <label for="prompt">Input Prompt:</label>
+        <input type="text" id="prompt" placeholder="Please Input Prompt">
+        <button id="generate-btn">Generate Image</button>
+        <div id="displayArea">
+            <p id="dataDisplay"></p>
+            
+            <button id="generate-btn">Generate Image</button>
+            <div id="image-container">
+                <img id="generated-image" src="http://127.0.0.1:5500/public/index.html" alt="Generated Image" style="display: none;">
+            </div>
+            <div id="info-box" class="info-box" style="display: none;">
+                <p><strong>Room Profile</strong></p>
+                <p>Usable Floor Area: <span>&gt; 20 m²</span></p>
+                <p>Humidity: <span>A</span></p>
+                <p>Light: <span>4/workstation</span></p>
+                <p><strong>Temperature: <span>&lt; 25°C</span></strong></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('generate-btn')?.addEventListener('click', async () => {
+            console.log("clicked")
+            try {
+                const response = await fetch('/request');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                const imageUrl = data.result; // Adjust this if the structure of your response is different
+
+                const imgElement = document.getElementById('generated-image');
+                imgElement.src = imageUrl;
+                imgElement.style.display = 'block';
+            } catch (error) {
+                console.error('Error generating image:', error);
+            }
+        });
+    </script>
+    <script>
+        document.getElementById('req-thingspeak')?.addEventListener('click', async () => {
+            console.log("Requesting data from thingspeak")
+            try {
+                const response = await fetch('/fetch');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const res = await response.json();
+                console.log(res.data) // <--------------------- add front end for this
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    </script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"><template shadowrootmode="open"><style>
+      div.grammarly-desktop-integration {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select:none;
+        user-select:none;
+      }
+
+      div.grammarly-desktop-integration:before {
+        content: attr(data-content);
+      }
+    </style><div aria-label="grammarly-integration" role="group" tabindex="-1" class="grammarly-desktop-integration" data-content="{&quot;mode&quot;:&quot;full&quot;,&quot;isActive&quot;:true,&quot;isUserDisabled&quot;:false}"></div></template></grammarly-desktop-integration></html>
