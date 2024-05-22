@@ -28,11 +28,12 @@ var import_replicate = __toESM(require("replicate"));
 var import_cors = __toESM(require("cors"));
 var import_path = __toESM(require("path"));
 const replicate = new import_replicate.default({
-  auth: "r8_DbLLQW3PyidLx9phoExbqwC5xwzTUSZ3gsyfv"
+  auth: "r8_Eh7ybTSH8i1D6a4IoJ1n7k1hG5Jqhlw3A3DDz"
 });
 const model = "stability-ai/stable-diffusion:db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf";
-const input = {
-  prompt: "I need a small room with 21 degrees of light, 34 ultrasonic, 45 temperture and 56 humidity"
+let input = {
+  prompt: ""
+  // I need a small room with 21 degrees of light, 34 ultrasonic, 45 temperture and 56 humidity
 };
 const thingspeakAPI = import_axios.default.create({
   baseURL: "https://api.thingspeak.com"
@@ -56,15 +57,6 @@ const corsOptions = {
   // Whitelist the domains you want to allow
 };
 app.use((0, import_cors.default)(corsOptions));
-app.get("/request", async (req, res) => {
-  try {
-    const result = await replicate.run(model, { input });
-    res.json({ message: "Image generated at URL:", result });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 const fetchDataFromThingSpeak = async () => {
   try {
     const response = await thingspeakAPI.get(`/channels/${channelID}/feeds.json?api_key=${readApiKey}`);
@@ -86,6 +78,20 @@ const saveDataToCSV = (data, filePath) => {
   });
   csvWriter.writeRecords(data).then(() => console.log("Saved to CSV")).catch((error) => console.error("Failed to save to CSV:", error));
 };
+app.post("/request", async (req, res) => {
+  const inputPrompt = req.body.prompt;
+  input = {
+    prompt: inputPrompt
+  };
+  console.log(input);
+  try {
+    const result = await replicate.run(model, { input });
+    res.json({ message: "Image generated at URL:", result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 app.get("/fetch", async (req, res) => {
   try {
     const data = await fetchDataFromThingSpeak();

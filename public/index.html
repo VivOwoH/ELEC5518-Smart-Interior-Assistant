@@ -11,17 +11,19 @@
 
 <body data-new-gr-c-s-check-loaded="14.1173.0" data-gr-ext-installed="">
     <style>
-        .site-header, .site-footer {
-            background-color: #008000; /* Green color */
+        .site-header,
+        .site-footer {
+            background-color: #008000;
+            /* Green color */
             color: white;
             text-align: center;
             padding: 1em 0;
         }
-        
+
         .site-header h1 {
             margin: 0;
         }
-        
+
         .site-footer p {
             margin: 0;
         }
@@ -40,7 +42,7 @@
 
         img {
             max-width: 100%;
-            max-height: 100%;
+            max-height: 90%;
         }
 
         body {
@@ -119,10 +121,10 @@
     <!-- PROMPT & ROOM PROFILE AREA -->
     <div id="root">
         <br>
-        <label for="prompt">Input Prompt:</label>
-        <input type="text" id="prompt" placeholder="What do you want your room to look like?">
-
-        <button id="generate-btn">Generate Image</button>
+        <form id="promptForm">
+            <label for="prompt">Input Prompt:</label>
+            <input type="text" id="prompt" placeholder="What do you want your room to look like?">
+        </form>
 
         <div id="displayArea">
             <div id="info-box" class="info-box">
@@ -131,26 +133,28 @@
                 <p id="humidity">Humidity: <span></span></p>
                 <p id="light">Light: <span></span></p>
                 <p id="temp">Temperature: <span></span></p>
-                
+
                 <button id="req-thingspeak">Latest room data</button>
             </div>
             <div id="prompt-box" class="info-box" style="position: absolute;top: 450px;right: 60px;">
-                <p id="p-title"><strong>Recommended prompts</strong></p>
-                <p>"placeholder"</span></p>
+                <p id="p-title"><strong>Recommendation</strong></p>
+                <div id="recommendations"></div>
             </div>
         </div>
     </div>
 
     <!-- DATA DISPLAY AREA -->
     <div id="image-area" style="flex-wrap: nowrap;">
-        
+
         <div class="image-container">
             <p>Your room</span></p>
-            <img id="room-image" src="https://archive.org/download/placeholder-image/placeholder-image.jpg" alt="Your Room Image">
+            <img id="room-image" src="https://archive.org/download/placeholder-image/placeholder-image.jpg"
+                alt="Your Room Image">
         </div>
         <div class="image-container">
             <p>Generated room</span></p>
-            <img id="generated-image" src="https://archive.org/download/placeholder-image/placeholder-image.jpg" alt="Generated Image">
+            <img id="generated-image" src="https://archive.org/download/placeholder-image/placeholder-image.jpg"
+                alt="Generated Image">
         </div>
     </div>
 
@@ -160,10 +164,19 @@
     </footer>
 
     <script>
-        document.getElementById('generate-btn')?.addEventListener('click', async () => {
-            console.log("clicked")
+        document.getElementById('promptForm').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+            const promptValue = document.getElementById('prompt').value;
+
             try {
-                const response = await fetch('/request');
+                const response = await fetch('/request', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt: promptValue })
+                });
+
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -178,6 +191,42 @@
             }
         });
     </script>
+
+    <script>
+        function generateRecommendations(data) {
+            const recommendations = [];
+
+            if (data.field1 < 200) { // area
+                recommendations.push('Consider space-saving furniture for a small space.');
+            } else if (data.field1 > 300) {
+                recommendations.push('Consider multiple functional zones for a large space.');
+            }
+
+            if (data.field3 > 32) { // temp
+                recommendations.push('Consider wooden or leather furniture to reduce heat.');
+            } else if (data.temperature < 20) {
+                recommendations.push('Consider wool furniture for warmth.');
+            }
+
+            if (data.field4 < 0.7) { // light
+                recommendations.push('Consider more windows or better lighting.');
+            }
+
+            displayRecommendations(recommendations);
+        }
+
+        function displayRecommendations(recommendations) {
+            const recommendationsContainer = document.getElementById('recommendations');
+            recommendationsContainer.innerHTML = ''; // clear previous recommendations
+
+            recommendations.forEach(rec => {
+                const p = document.createElement('p');
+                p.textContent = rec;
+                recommendationsContainer.appendChild(p);
+            });
+        }
+    </script>
+
     <script>
         document.getElementById('req-thingspeak')?.addEventListener('click', async () => {
             console.log("Requesting data from thingspeak")
@@ -191,10 +240,14 @@
                 latest_data = res.data[res.data.length - 1]
 
                 // display data into box
-                document.getElementById('area').querySelector('span').textContent = `${parseFloat(latest_data.field1).toFixed(4)} m²`; 
+                document.getElementById('area').querySelector('span').textContent = `${(parseFloat(latest_data.field1)*parseFloat(latest_data.field1)/10000).toFixed(4)} m²`;
                 document.getElementById('humidity').querySelector('span').textContent = parseFloat(latest_data.field2).toFixed(4);
-                document.getElementById('light').querySelector('span').textContent = parseFloat(latest_data.field3).toFixed(4);
-                document.getElementById('temp').querySelector('span').textContent = `${parseFloat(latest_data.field4).toFixed(4)}°C`;
+                document.getElementById('temp').querySelector('span').textContent = `${parseFloat(latest_data.field3).toFixed(4)}°C`;
+                document.getElementById('light').querySelector('span').textContent = parseFloat(latest_data.field4).toFixed(4);
+
+                // display recommend prompts
+                generateRecommendations(latest_data);
+
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -217,4 +270,5 @@
             }
         });
     </script>
+
 </html>

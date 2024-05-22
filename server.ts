@@ -6,14 +6,14 @@ import cors from 'cors';
 import path from 'path';
 
 const replicate = new Replicate({
-    auth: "r8_DbLLQW3PyidLx9phoExbqwC5xwzTUSZ3gsyfv",
+    auth: "r8_Eh7ybTSH8i1D6a4IoJ1n7k1hG5Jqhlw3A3DDz",
 });
 
 const model =
     "stability-ai/stable-diffusion:db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf";
-const input = {
+let input = {
     prompt:
-        "I need a small room with 21 degrees of light, 34 ultrasonic, 45 temperture and 56 humidity",
+        "", // I need a small room with 21 degrees of light, 34 ultrasonic, 45 temperture and 56 humidity
 };
 
 // thingspeak
@@ -45,18 +45,6 @@ const corsOptions = {
 };
 app.use(cors(corsOptions)); // Use the cors middleware with your options
 
-// Replicate request
-app.get("/request", async (req: Request, res: Response): Promise<void> => {
-    try {
-        const result = await replicate.run(model, { input });
-        // Send the response back to the client
-        res.json({ message: 'Image generated at URL:', result });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
 
 const fetchDataFromThingSpeak = async (): Promise<any> => {
     try {
@@ -83,6 +71,24 @@ const saveDataToCSV = (data: any[], filePath: string): void => {
         .catch((error: any) => console.error("Failed to save to CSV:", error));
 };
 
+// Replicate request
+app.post('/request', async (req: Request, res: Response): Promise<void> => {
+    const inputPrompt = req.body.prompt;
+    input = {
+        prompt: inputPrompt,
+    };
+
+    console.log(input);
+
+    try {
+        const result = await replicate.run(model, { input });
+        // Send the response back to the client
+        res.json({ message: 'Image generated at URL:', result });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 app.get("/fetch", async (req: Request, res: Response): Promise<void> => {
     try {
