@@ -28,7 +28,8 @@ var import_replicate = __toESM(require("replicate"));
 var import_cors = __toESM(require("cors"));
 var import_path = __toESM(require("path"));
 const replicate = new import_replicate.default({
-  auth: "r8_Eh7ybTSH8i1D6a4IoJ1n7k1hG5Jqhlw3A3DDz"
+  auth: ""
+  // <--------------- ENTER YOUR OWN
 });
 const model = "stability-ai/stable-diffusion:db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf";
 let input = {
@@ -39,13 +40,14 @@ const thingspeakAPI = import_axios.default.create({
   baseURL: "https://api.thingspeak.com"
 });
 const channelID = "2549941";
-const readApiKey = "2DWC40ZT6TVFVB67";
+const readApiKey = "";
 const username = "vivianH";
 const feedKey = "image-stream";
 const adafruitIOAPI = import_axios.default.create({
   baseURL: "https://io.adafruit.com/api/v2",
   headers: {
-    "X-AIO-Key": "aio_cAcE97DnmfhfSE1wtk60dbttr069"
+    "X-AIO-Key": ""
+    // <--------------- ENTER YOUR OWN
   }
 });
 const app = (0, import_express.default)();
