@@ -23,7 +23,7 @@ const thingspeakAPI = axios.create({
     baseURL: "https://api.thingspeak.com",
 });
 
-const channelID = '2549941'; // <--------------- THIS EXAMPLE CHANNEL IS PRIVATE, YOU NEED TO CREATE YOUR OWN CHANNEL
+const channelID = '2549941'; // <--------------- THIS IS AN EXAMPLE, YOU NEED TO CREATE YOUR OWN CHANNEL
 const readApiKey = ''; // <--------------- ENTER YOUR OWN
 
 // Adafruit IO
